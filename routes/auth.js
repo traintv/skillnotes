@@ -7,7 +7,6 @@ const passport = require('passport');
 
 require('../config/passport');
 
-// Функция для создания демо-заметки
 const createDemoNote = async (userId) => {
   try {
     const { marked } = await import('marked');
@@ -27,7 +26,6 @@ const createDemoNote = async (userId) => {
   }
 };
 
-// Регистрация по email
 router.post('/signup', [
   body('email')
     .isEmail()
@@ -81,7 +79,6 @@ router.post('/signup', [
   }
 });
 
-// Вход по email
 router.post('/login', [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty()
@@ -103,7 +100,6 @@ router.post('/login', [
   })(req, res, next);
 });
 
-// Выход
 router.post('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -115,7 +111,6 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// Проверка аутентификации
 router.get('/check', (req, res) => {
   if (req.session && req.session.userId) {
     return res.json({ authenticated: true });
@@ -123,7 +118,6 @@ router.get('/check', (req, res) => {
   res.json({ authenticated: false });
 });
 
-// Получение информации о текущем пользователе
 router.get('/me', async (req, res) => {
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ error: 'Не авторизован' });
