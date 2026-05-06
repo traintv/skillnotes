@@ -1,0 +1,106 @@
+{% extends "_layout.njk" %}
+
+{% block content %}
+<div class="uk-grid uk-child-width-1-2@m" uk-grid>
+  <div>
+    <div class="uk-card uk-card-default uk-card-body">
+      <h3 class="uk-card-title">Регистрация</h3>
+      <form id="signup-form">
+        <div class="uk-margin">
+          <input class="uk-input" type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="uk-margin">
+          <input class="uk-input" type="text" name="username" placeholder="Имя пользователя" required>
+        </div>
+        <div class="uk-margin">
+          <input class="uk-input" type="password" name="password" placeholder="Пароль" required>
+        </div>
+        <div class="uk-margin">
+          <button class="uk-button uk-button-primary" type="submit">Зарегистрироваться</button>
+        </div>
+        <div class="uk-alert uk-alert-danger uk-hidden" id="signup-error"></div>
+      </form>
+    </div>
+  </div>
+  <div>
+    <div class="uk-card uk-card-default uk-card-body">
+      <h3 class="uk-card-title">Вход</h3>
+      <form id="login-form">
+        <div class="uk-margin">
+          <input class="uk-input" type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="uk-margin">
+          <input class="uk-input" type="password" name="password" placeholder="Пароль" required>
+        </div>
+        <div class="uk-margin">
+          <button class="uk-button uk-button-primary" type="submit">Войти</button>
+        </div>
+        <div class="uk-alert uk-alert-danger uk-hidden" id="login-error"></div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('signup-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const errorEl = document.getElementById('signup-error');
+    errorEl.classList.add('uk-hidden');
+
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email.value,
+          username: form.username.value,
+          password: form.password.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ошибка регистрации');
+      }
+
+      window.location.href = '/dashboard';
+    } catch (error) {
+      errorEl.textContent = error.message;
+      errorEl.classList.remove('uk-hidden');
+    }
+  });
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const errorEl = document.getElementById('login-error');
+    errorEl.classList.add('uk-hidden');
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email.value,
+          password: form.password.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ошибка входа');
+      }
+
+      window.location.href = '/dashboard';
+    } catch (error) {
+      errorEl.textContent = error.message;
+      errorEl.classList.remove('uk-hidden');
+    }
+  });
+</script>
+{% endblock %}
